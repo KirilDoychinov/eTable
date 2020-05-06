@@ -147,19 +147,19 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Data.cpp" />
-    <ClCompile Include="DataManager.cpp" />
+    <ClCompile Include="Cell.cpp" />
+    <ClCompile Include="TableManager.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="Number.cpp" />
-    <ClCompile Include="String.cpp" />
+    <ClCompile Include="NumCell.cpp" />
+    <ClCompile Include="TextCell.cpp" />
     <ClCompile Include="StringUtils.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Data.h" />
-    <ClInclude Include="DataManager.h" />
-    <ClInclude Include="Number.h" />
+    <ClInclude Include="Cell.h" />
+    <ClInclude Include="TableManager.h" />
+    <ClInclude Include="NumCell.h" />
     <ClInclude Include="resource.h" />
-    <ClInclude Include="String.h" />
+    <ClInclude Include="TextCell.h" />
     <ClInclude Include="StringUtils.h" />
   </ItemGroup>
   <ItemGroup>

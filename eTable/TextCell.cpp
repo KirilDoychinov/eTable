@@ -1,4 +1,4 @@
-#include "String.h"
+#include "TextCell.h"
 #include "StringUtils.h"
 #include <string>
 

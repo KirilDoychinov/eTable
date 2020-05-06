@@ -1,18 +1,18 @@
-#ifndef DATA_MANAGER_F
-#define DATA_MANAGER_F
+#ifndef TABLE_MANAGER_F
+#define TABLE_MANAGER_F
 
-#include "Data.h"
+#include "Cell.h"
 
-class DataManager
+class TableManager
 {
 public:
-	static Data* createData(std::string);
+	static Cell* createData(std::string);
 	static double evalRef(const std::string&);
 	static bool evaluateFormula(std::string, double&);
 
 
 	const static int x = 100, y = 200;
-	const static Data** table;
+	const static Cell** table;
 
 };
 

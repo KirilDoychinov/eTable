@@ -1,13 +1,13 @@
-#ifndef STRING_H
-#define STRING_H
+#ifndef TEXT_CELL_H
+#define TEXT_CELL_H
 
-#include "Data.h"
+#include "Cell.h"
 
 //// private destructor only
 class String :
-	public Data
+	public Cell
 {
-	friend class DataManager;
+	friend class TableManager;
 public:
 	double evaluate() const;
 	void print() const;

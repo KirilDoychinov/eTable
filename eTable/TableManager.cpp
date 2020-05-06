@@ -1,18 +1,18 @@
-#include "DataManager.h" 
-#include "Number.h" 
-#include "String.h"
+#include "TableManager.h" 
+#include "NumCell.h" 
+#include "TextCell.h"
 #include "StringUtils.h"
 #include <iostream>
 #include <stack>
 #include <cmath>
 
-const Data** DataManager::table = new const Data * [10];
+const Cell** TableManager::table = new const Cell * [10];
 
 
-Data* DataManager::createData(std::string str) {
+Cell* TableManager::createData(std::string str) {
 	StringUtils::trim(str);
 
-	Data* d = nullptr;
+	Cell* d = nullptr;
 	if (str.empty())
 		d = new String("");
 
@@ -20,12 +20,12 @@ Data* DataManager::createData(std::string str) {
 		d = new String(str);
 
 	else if (StringUtils::isNum(str))
-		d = new Number(std::stod(str));
+		d = new NumCell(std::stod(str));
 
 	else if (StringUtils::isFormula(str)) {
 		double result = 0;
 		if (evaluateFormula(str, result))
-			d = new Number(std::stod(str));
+			d = new NumCell(std::stod(str));
 		else {
 			std::string error = "ERROR";
 			d = new String(error);
@@ -36,7 +36,7 @@ Data* DataManager::createData(std::string str) {
 	return d;
 }
 
-double DataManager::evalRef(const std::string& ref) {
+double TableManager::evalRef(const std::string& ref) {
 	int row = 0, col = 0, i = 0, size = ref.size();
 	double val = 0;
 	for (i = 0; i < size; ++i)
@@ -86,7 +86,7 @@ bool doNextOperation(std::stack<double>& nums, std::stack<char>& ops) {
 }
 
 
-bool DataManager::evaluateFormula(std::string str, double& d) {
+bool TableManager::evaluateFormula(std::string str, double& d) {
 	std::stack<double> nums;
 	std::stack<char> ops;
 

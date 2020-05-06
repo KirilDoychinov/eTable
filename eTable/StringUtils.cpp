@@ -74,6 +74,7 @@ bool StringUtils::isFormula(const std::string& str) {
 		if (isMathOperator(ch) || i == str.size() - 1) {
 			int k = ((i == str.size() - 1) ? 1 : 0);
 			std::string temp = str.substr(pos, i - pos + k);
+
 			if (isSign(temp.front()) || !(isNum(temp) || isReference(temp)))
 				return false;
 			pos = i + 1;

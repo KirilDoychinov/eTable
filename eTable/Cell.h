@@ -1,14 +1,14 @@
-#ifndef DATA_H
-#define DATA_H
+#ifndef CELL_H
+#define CELL_H
 
 #include<iostream>
 
-class Data
+class Cell
 {
 public:
 	virtual double evaluate() const = 0;
 	virtual void print() const = 0;
-	virtual ~Data();
+	virtual ~Cell();
 };
 
 #endif

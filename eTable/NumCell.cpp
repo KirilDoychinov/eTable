@@ -1,24 +1,24 @@
-#include "Number.h"
+#include "NumCell.h"
 #include <iomanip>
 #include <string>
 
 int digits(double);
 
-Number::Number(double d) : value(d) {
+NumCell::NumCell(double d) : value(d) {
 }
 
-Number::~Number() {
+NumCell::~NumCell() {
 }
 
-double Number::evaluate() const {
+double NumCell::evaluate() const {
 	return value;
 }
 
-void Number::print() const {
+void NumCell::print() const {
 	if (std::fabs(value - std::round(value)) < 0.001)
 		std::cout << std::round(value);
 	else
-		std::cout << std::setprecision(digits(value) + 3) << value;
+		std::cout << std::setprecision((double)digits(value) + 3) << value;
 }
 
 int digits(double d) {
