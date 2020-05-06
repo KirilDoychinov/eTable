@@ -1,7 +1,7 @@
 #include "DataManager.h" 
 #include "Number.h" 
 #include "String.h"
-#include "DataUtils.h"
+#include "StringUtils.h"
 #include <iostream>
 #include <stack>
 #include <cmath>
@@ -10,7 +10,7 @@ const Data** DataManager::table = new const Data * [10];
 
 
 Data* DataManager::createData(std::string str) {
-	DataUtils::trim(str);
+	StringUtils::trim(str);
 
 	Data* d = nullptr;
 	if (str.empty())
@@ -19,10 +19,10 @@ Data* DataManager::createData(std::string str) {
 	else if (str.size() > 1 && str.front() == '"' && str.back() == '"')
 		d = new String(str);
 
-	else if (DataUtils::isNum(str))
+	else if (StringUtils::isNum(str))
 		d = new Number(std::stod(str));
 
-	else if (DataUtils::isFormula(str)) {
+	else if (StringUtils::isFormula(str)) {
 		double result = 0;
 		if (evaluateFormula(str, result))
 			d = new Number(std::stod(str));
@@ -90,13 +90,13 @@ bool DataManager::evaluateFormula(std::string str, double& d) {
 	std::stack<double> nums;
 	std::stack<char> ops;
 
-	int i = 0, j = 0, pos = 1;
+	unsigned int i = 0, j = 0, pos = 1;
 
 	for (i = 1; i < str.size(); ++i) {
 
 		char ch = str.at(i);
 
-		if (DataUtils::isMathOperator(ch)) {
+		if (StringUtils::isMathOperator(ch)) {
 			std::string temp = str.substr(pos, str.size() - pos - 1);
 			if (temp.front() == 'R')
 				nums.push(evalRef(temp));

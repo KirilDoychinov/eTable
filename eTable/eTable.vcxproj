@@ -152,7 +152,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Number.cpp" />
     <ClCompile Include="String.cpp" />
-    <ClCompile Include="DataUtils.cpp" />
+    <ClCompile Include="StringUtils.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Data.h" />
@@ -160,7 +160,7 @@
     <ClInclude Include="Number.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="String.h" />
-    <ClInclude Include="DataUtils.h" />
+    <ClInclude Include="StringUtils.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="eTable.rc" />
