@@ -7,16 +7,15 @@
 class Number :
 	public Data
 {
-	friend class DataFactory;
+	friend class DataManager;
 
 public:
 	double evaluate() const;
 	void print() const;
 	~Number();
 	
-
 private:
-	Number(std::string);
+	Number(double);
 	double value;
 };
 

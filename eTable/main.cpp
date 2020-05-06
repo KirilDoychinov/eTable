@@ -2,6 +2,7 @@
 #include <cmath>
 #include <iomanip>
 #include <string>
+#include "DataManager.h"
 
 int main()
 {
@@ -16,11 +17,7 @@ int main()
 
 	while (x != 0) { x /= 10; digits++; }
 
-	std::cout << digits << " " << std::setprecision(digits + 3) << d << std::endl;
-
-	std::cout << std::stod("3.0000") << std::endl;
-
-
+	std::cout << DataManager::evaluateFormula("=0.1-0.45664+5/8");
 
 }
 

@@ -148,15 +148,15 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Data.cpp" />
-    <ClCompile Include="DataFactory.cpp" />
-    <ClCompile Include="eTable.cpp" />
+    <ClCompile Include="DataManager.cpp" />
+    <ClCompile Include="main.cpp" />
     <ClCompile Include="Number.cpp" />
     <ClCompile Include="String.cpp" />
     <ClCompile Include="DataUtils.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Data.h" />
-    <ClInclude Include="DataFactory.h" />
+    <ClInclude Include="DataManager.h" />
     <ClInclude Include="Number.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="String.h" />

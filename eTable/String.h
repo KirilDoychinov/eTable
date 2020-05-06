@@ -7,7 +7,7 @@
 class String :
 	public Data
 {
-	friend class DataFactory;
+	friend class DataManager;
 public:
 	double evaluate() const;
 	void print() const;

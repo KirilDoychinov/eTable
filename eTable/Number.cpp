@@ -4,8 +4,7 @@
 
 int digits(double);
 
-Number::Number(std::string str) {
-	this->value = std::stod(str);
+Number::Number(double d) : value(d) {
 }
 
 Number::~Number() {
