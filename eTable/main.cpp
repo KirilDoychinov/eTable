@@ -2,7 +2,16 @@
 #include <cmath>
 #include <iomanip>
 #include <string>
+#include <map>
 #include "TableManager.h"
+#include <functional>
+
+
+void sub() {
+	std::cout << "Bad";
+}
+
+void add();
 
 int main()
 {
@@ -11,7 +20,10 @@ int main()
 
 
 	TableManager::evaluateFormula("=5-7*5 + 2/1", d);
-	std::cout << d << std::endl;
+	help();
+
+
+
 }
 
 

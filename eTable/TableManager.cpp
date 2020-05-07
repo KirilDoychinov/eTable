@@ -9,7 +9,7 @@
 const Cell** TableManager::table = new const Cell * [10];
 
 
-Cell* TableManager::createData(std::string str) {
+Cell* TableManager::createCell(std::string str) {
 	StringUtils::trim(str);
 
 	Cell* d = nullptr;

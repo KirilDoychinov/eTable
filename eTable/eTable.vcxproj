@@ -148,6 +148,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Cell.cpp" />
+    <ClCompile Include="ControlPanel.cpp" />
     <ClCompile Include="TableManager.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="NumCell.cpp" />
@@ -156,6 +157,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Cell.h" />
+    <ClInclude Include="ControlPanel.h" />
     <ClInclude Include="TableManager.h" />
     <ClInclude Include="NumCell.h" />
     <ClInclude Include="resource.h" />

@@ -6,7 +6,7 @@
 class TableManager
 {
 public:
-	static Cell* createData(std::string);
+	static Cell* createCell(std::string);
 	static double evalRef(const std::string&);
 	static bool evaluateFormula(std::string, double&);
 
