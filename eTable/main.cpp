@@ -20,7 +20,6 @@ int main()
 
 
 	TableManager::evaluateFormula("=5-7*5 + 2/1", d);
-	help();
 
 
 
