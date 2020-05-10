@@ -25,7 +25,8 @@ int digits(double d) {
 	int x = std::floor(d), digits = 0;
 
 	while (x != 0) {
-		x /= 10; ++digits;
+		x /= 10;
+		++digits;
 	}
 
 	return digits;

@@ -5,13 +5,14 @@
 
 namespace StringUtils
 {
-	bool isDigit(const char&);
-	bool isMathOperator(const char&);
+	bool isDigit(char);
+	bool isMathOperator(char);
+	bool isSign(char);
 	void trim(std::string&);
-	bool isNum(std::string);
-	bool isSign(const char&);
+	bool isNumber(const std::string&);
+	bool isInteger(const std::string&);
 	bool isFormula(const std::string&);
-	bool isReference(std::string&);
+	bool isReference(const std::string&);
 };
 
 #endif

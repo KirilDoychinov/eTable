@@ -1,22 +1,23 @@
-#ifndef TEXT_CELL_H
-#define TEXT_CELL_H
+#ifndef ERROR_CELL_H
+#define ERROR_CELL_H
 
 #include "Cell.h"
 
 //// private destructor only
-class TextCell :
+class ErrorCell :
 	public Cell
 {
 	friend class TableManager;
 public:
 	double evaluate() const;
 	void print() const;
-	~TextCell();
+	~ErrorCell();
 
 private:
-	TextCell(const std::string&);
-	std::string str;
+	ErrorCell();
 };
 
 #endif
+
+
 

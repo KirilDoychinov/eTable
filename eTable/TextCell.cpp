@@ -2,23 +2,23 @@
 #include "StringUtils.h"
 #include <string>
 
-String::String(std::string str) :str(str) {
+TextCell::TextCell(const std::string& str) :str(str) {
 }
 
-String::~String() {
+TextCell::~TextCell() {
 }
 
-double String::evaluate() const {
-	double value = 0;
+double TextCell::evaluate() const {
+	double value = 0.;
 	std::string noQuotes = str.substr(1, str.size() - 2);
 
-	if (StringUtils::isNum(noQuotes))
+	if (StringUtils::isNumber(noQuotes))
 		value = std::stod(str);
 
 	return value;
 }
 
-void String::print() const {
+void TextCell::print() const {
 	std::cout << str;
 }
 

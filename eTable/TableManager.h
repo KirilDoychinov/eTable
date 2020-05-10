@@ -2,18 +2,26 @@
 #define TABLE_MANAGER_F
 
 #include "Cell.h"
+#include <optional>
+#include <vector>
 
 class TableManager
 {
 public:
-	static Cell* createCell(std::string);
-	static double evalRef(const std::string&);
-	static bool evaluateFormula(std::string, double&);
+	TableManager(int, int);
+	~TableManager();
 
+	Cell* createCell(std::string&);
+	Cell* getCell(int, int);
+	double evaluateRef(const std::string&);
+	std::optional<double> evaluateFormula(const std::string&);
+	void editCell(int, int, std::string&);
+	bool cellExists(int, int);
 
-	const static int x = 100, y = 200;
-	const static Cell** table;
-
+private:
+	int rows;
+	int columns;
+	std::vector<std::vector<Cell*>> table;
 };
 
 #endif

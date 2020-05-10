@@ -1,96 +1,89 @@
 #include "TableManager.h" 
 #include "NumCell.h" 
 #include "TextCell.h"
+#include "EmptyCell.h"
+#include "ErrorCell.h"
 #include "StringUtils.h"
 #include <iostream>
 #include <stack>
 #include <cmath>
 
-const Cell** TableManager::table = new const Cell * [10];
-
-
-Cell* TableManager::createCell(std::string str) {
-	StringUtils::trim(str);
-
-	Cell* d = nullptr;
-	if (str.empty())
-		d = new String("");
-
-	else if (str.size() > 1 && str.front() == '"' && str.back() == '"')
-		d = new String(str);
-
-	else if (StringUtils::isNum(str))
-		d = new NumCell(std::stod(str));
-
-	else if (StringUtils::isFormula(str)) {
-		double result = 0;
-		if (evaluateFormula(str, result))
-			d = new NumCell(std::stod(str));
-		else {
-			std::string error = "ERROR";
-			d = new String(error);
-		}
-
-	}
-
-	return d;
+TableManager::TableManager(int rows, int columns) : rows(rows), columns(columns), table(rows, std::vector <Cell*>(columns, new EmptyCell())) {
 }
 
-double TableManager::evalRef(const std::string& ref) {
-	int row = 0, col = 0, i = 0, size = ref.size();
-	double val = 0;
-	for (i = 0; i < size; ++i)
-		if (ref.at(i) == 'C')
-			break;
+TableManager::~TableManager() {
+	for (size_t i = 0; i < rows; ++i)
+		for (size_t j = 0; j < columns; ++j)
+			delete table[i][j];
+}
 
-	std::string r = ref.substr(1, i - 1);
-	std::string c = ref.substr(i + 1, size - i - 1);
-	row = std::stoi(r);
-	col = std::stoi(c);
+Cell* TableManager::getCell(int row, int col) {
+	return table.at(row - 1).at(col - 1);
+}
 
-	if (row <= x && col <= y)
-		val = table[x][y].evaluate();
 
-	return val;
+Cell* TableManager::createCell(std::string& str) {
+	StringUtils::trim(str);
+
+	if (str.empty())
+		return new EmptyCell();
+
+	else if (str.size() > 1 && str.front() == '"' && str.back() == '"')
+		return new TextCell(str);
+
+	else if (StringUtils::isNumber(str))
+		return new NumCell(std::stod(str));
+
+	else if (StringUtils::isFormula(str)) {
+		std::optional<double> result = evaluateFormula(str);
+		if (result.has_value())
+			return new NumCell(result.value());
+		std::cout << "Dividing by zero!" << std::endl;;
+	}
+
+	return new ErrorCell();
+}
+
+double TableManager::evaluateRef(const std::string& ref) {
+	std::string column = "C";
+	size_t pos = ref.find_first_of(column);
+
+	if (pos != std::string::npos) {
+		std::string row = ref.substr(1, pos - 1);
+		std::string col = ref.substr(pos + 1);
+		int x = std::stoi(row), y = std::stoi(col);
+
+		if (cellExists(x, y))
+			return getCell(x, y)->evaluate();
+	}
+
+	return 0.;
 }
 
 int precedence(const char& ch) {
-	int prec = 2;
-
-	if (ch == '*' || ch == '/')
-		prec = 3;
-
-	else if (ch == '^')
-		prec = 4;
-
-	return prec;
+	return (ch == '*' || ch == '/') ? 3 : (ch == '^') ? 4 : 2;
 }
 
 bool doNextOperation(std::stack<double>& nums, std::stack<char>& ops) {
-	char op = ops.top();
-	ops.pop();
-	double y = nums.top();
-	nums.pop();
-	double x = nums.top();
-	nums.pop();
-
-	double result = 0;
+	char op = ops.top(); ops.pop();
+	double y = nums.top(); nums.pop();
+	double x = nums.top(); nums.pop();
 
 	if (op == '/' && fabs(y - .0) < 0.001)
 		return false;
 
-	result = (op == '+') ? (x + y) : ((op == '-') ? (x - y) : ((op == '*') ? (x * y) : ((op == '/') ? (x / y) : pow(x, y))));
+	double result = (op == '+') ? (x + y) : (op == '-') ? (x - y) : (op == '*') ? (x * y) : (op == '/') ? (x / y) : pow(x, y);
 	nums.push(result);
 
 	return true;
 }
 
 
-bool TableManager::evaluateFormula(std::string str, double& d) {
+std::optional<double> TableManager::evaluateFormula(const std::string& str) {
 	std::stack<double> nums;
 	std::stack<char> ops;
 
-	unsigned int i = 0, j = 0, pos = 1;
+	size_t i = 0, j = 0, pos = 1;
 
 	for (i = 1; i < str.size(); ++i) {
 
@@ -99,33 +92,50 @@ bool TableManager::evaluateFormula(std::string str, double& d) {
 		if (StringUtils::isMathOperator(ch)) {
 			std::string temp = str.substr(pos, str.size() - pos - 1);
 			if (temp.front() == 'R')
-				nums.push(evalRef(temp));
+				nums.push(evaluateRef(temp));
 			else
 				nums.push(std::stod(temp));
 
 			pos = i + 1;
 
 			while (!ops.empty() && precedence(ops.top()) >= precedence(ch))
-				if (!doNextOperation(nums, ops))
-					return false;
+				if (!doNextOperation(nums, ops)) {
+					return std::nullopt;
+				}
+
 			ops.push(ch);
 		}
 
 		else if (i == str.size() - 1) {
 			std::string temp = str.substr(pos, str.size() - pos);
 			if (temp.front() == 'R')
-				nums.push(evalRef(temp));
+				nums.push(evaluateRef(temp));
 			else
 				nums.push(std::stod(temp));
 
 			while (!ops.empty() && precedence(ops.top()) >= precedence(ch))
 				if (!doNextOperation(nums, ops))
-					return false;
+					return std::nullopt;
 		}
 	}
 
-	d = nums.top();
-	return true;
+	return nums.top();
 }
+
+bool TableManager::cellExists(int row, int col) {
+	return row > 0 && col > 0 && row <= rows && col <= columns;
+}
+
+void TableManager::editCell(int row, int col, std::string& str) {
+	if (cellExists(row, col)) {
+		Cell* cell = getCell(row, col);
+		delete cell;
+		cell = createCell(str);
+	}
+
+	else
+		std::cout << "Invalid cell! Editing unsuccesful" << std::endl;
+}
+
 
 

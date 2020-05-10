@@ -1,21 +1,20 @@
-#ifndef TEXT_CELL_H
-#define TEXT_CELL_H
+#ifndef EMPTY_CELL_H
+#define EMPTY_CELL_H
 
 #include "Cell.h"
 
 //// private destructor only
-class TextCell :
+class EmptyCell :
 	public Cell
 {
 	friend class TableManager;
 public:
 	double evaluate() const;
 	void print() const;
-	~TextCell();
+	~EmptyCell();
 
 private:
-	TextCell(const std::string&);
-	std::string str;
+	EmptyCell();
 };
 
 #endif
