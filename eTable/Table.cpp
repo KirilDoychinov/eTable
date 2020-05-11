@@ -1,28 +1,24 @@
-#include "TableManager.h" 
+#include "Table.h" 
 #include "NumCell.h" 
 #include "TextCell.h"
 #include "EmptyCell.h"
 #include "ErrorCell.h"
 #include "StringUtils.h"
 #include <iostream>
+#include <iomanip>
 #include <stack>
 #include <cmath>
 
-TableManager::TableManager(int rows, int columns) : rows(rows), columns(columns), table(rows, std::vector <Cell*>(columns, new EmptyCell())) {
+Table::Table(int rows, int columns) : rows(rows), columns(columns), table(rows, std::vector <Cell*>(columns, new EmptyCell())) {
 }
 
-TableManager::~TableManager() {
+Table::~Table() {
 	for (size_t i = 0; i < rows; ++i)
 		for (size_t j = 0; j < columns; ++j)
 			delete table[i][j];
 }
 
-Cell* TableManager::getCell(int row, int col) {
-	return table.at(row - 1).at(col - 1);
-}
-
-
-Cell* TableManager::createCell(std::string& str) {
+Cell* Table::createCell(std::string& str) {
 	StringUtils::trim(str);
 
 	if (str.empty())
@@ -35,7 +31,7 @@ Cell* TableManager::createCell(std::string& str) {
 		return new NumCell(std::stod(str));
 
 	else if (StringUtils::isFormula(str)) {
-		std::optional<double> result = evaluateFormula(str);
+		std::optional<double> result = calculateFormula(str);
 		if (result.has_value())
 			return new NumCell(result.value());
 		std::cout << "Dividing by zero!" << std::endl;;
@@ -44,7 +40,7 @@ Cell* TableManager::createCell(std::string& str) {
 	return new ErrorCell();
 }
 
-double TableManager::evaluateRef(const std::string& ref) {
+double Table::evaluateReference(const std::string& ref) const {
 	std::string column = "C";
 	size_t pos = ref.find_first_of(column);
 
@@ -54,7 +50,7 @@ double TableManager::evaluateRef(const std::string& ref) {
 		int x = std::stoi(row), y = std::stoi(col);
 
 		if (cellExists(x, y))
-			return getCell(x, y)->evaluate();
+			return table.at(x - 1).at(y - 1)->evaluate();
 	}
 
 	return 0.;
@@ -79,7 +75,7 @@ bool doNextOperation(std::stack<double>& nums, std::stack<char>& ops) {
 }
 
 
-std::optional<double> TableManager::evaluateFormula(const std::string& str) {
+std::optional<double> Table::calculateFormula(const std::string& str) const {
 	std::stack<double> nums;
 	std::stack<char> ops;
 
@@ -92,7 +88,7 @@ std::optional<double> TableManager::evaluateFormula(const std::string& str) {
 		if (StringUtils::isMathOperator(ch)) {
 			std::string temp = str.substr(pos, str.size() - pos - 1);
 			if (temp.front() == 'R')
-				nums.push(evaluateRef(temp));
+				nums.push(evaluateReference(temp));
 			else
 				nums.push(std::stod(temp));
 
@@ -109,7 +105,7 @@ std::optional<double> TableManager::evaluateFormula(const std::string& str) {
 		else if (i == str.size() - 1) {
 			std::string temp = str.substr(pos, str.size() - pos);
 			if (temp.front() == 'R')
-				nums.push(evaluateRef(temp));
+				nums.push(evaluateReference(temp));
 			else
 				nums.push(std::stod(temp));
 
@@ -122,13 +118,13 @@ std::optional<double> TableManager::evaluateFormula(const std::string& str) {
 	return nums.top();
 }
 
-bool TableManager::cellExists(int row, int col) {
+bool Table::cellExists(int row, int col) const {
 	return row > 0 && col > 0 && row <= rows && col <= columns;
 }
 
-void TableManager::editCell(int row, int col, std::string& str) {
+void Table::editCell(int row, int col, std::string& str) {
 	if (cellExists(row, col)) {
-		Cell* cell = getCell(row, col);
+		Cell* cell = table.at(row - 1).at(col - 1);
 		delete cell;
 		cell = createCell(str);
 	}
@@ -136,6 +132,38 @@ void TableManager::editCell(int row, int col, std::string& str) {
 	else
 		std::cout << "Invalid cell! Editing unsuccesful" << std::endl;
 }
+
+void Table::print() const {
+
+	std::vector<size_t> maxSizeColumn(columns, 0);
+
+	for (size_t i = 0; i < rows; ++i) {
+		for (size_t j = 0; j < columns; ++j) {
+			size_t curentCellSize = table.at(i).at(j)->toString().size();
+			if (curentCellSize > maxSizeColumn.at(j))
+				maxSizeColumn.at(j) = curentCellSize;
+		}
+	}
+
+	for (size_t i = 0; i < rows; ++i)
+		for (size_t j = 0; j < columns; ++j) {
+			std::string str = table.at(i).at(j)->toString();
+			std::cout << " " << str << std::setw((maxSizeColumn.at(j) - str.size())) << " | ";
+		}
+}
+
+std::ostream& operator<<(std::ostream& os, const Table& t) {
+	char delimeter = ',';
+
+	for (size_t i = 0; i < t.rows; ++i) {
+		for (size_t j = 0; j < t.columns; ++j)
+			os << t.table.at(i).at(j)->toString() << delimeter;
+		os << '\n';
+	}
+
+	return os;
+}
+
 
 
 

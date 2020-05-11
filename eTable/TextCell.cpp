@@ -18,7 +18,7 @@ double TextCell::evaluate() const {
 	return value;
 }
 
-void TextCell::print() const {
-	std::cout << str;
+std::string TextCell::toString() const {
+	return str;
 }
 

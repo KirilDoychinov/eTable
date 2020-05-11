@@ -11,8 +11,8 @@ double ErrorCell::evaluate() const {
 	return 0.;
 }
 
-void ErrorCell::print() const {
-	std::cout << "ERROR";
+std::string ErrorCell::toString() const {
+	return "ERROR";
 }
 
 

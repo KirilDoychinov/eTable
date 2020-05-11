@@ -10,6 +10,6 @@ double EmptyCell::evaluate() const {
 	return 0.;
 }
 
-void EmptyCell::print() const {
-	std::cout << "";
+std::string EmptyCell::toString() const {
+	return "";
 }

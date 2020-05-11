@@ -1,6 +1,7 @@
 #include "NumCell.h"
 #include <iomanip>
 #include <string>
+#include <sstream>
 
 int digits(double);
 
@@ -14,11 +15,15 @@ double NumCell::evaluate() const {
 	return value;
 }
 
-void NumCell::print() const {
+std::string NumCell::toString() const {
+	std::stringstream ss;
+
 	if (std::fabs(value - std::round(value)) < 0.001)
-		std::cout << std::round(value);
+		ss << std::round(value);
 	else
-		std::cout << std::setprecision((double)digits(value) + 3) << value;
+		ss << std::setprecision((double)digits(value) + 3) << value;
+
+	return ss.str();
 }
 
 int digits(double d) {

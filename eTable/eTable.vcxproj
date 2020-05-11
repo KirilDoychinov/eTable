@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -150,7 +150,9 @@
   <ItemGroup>
     <ClCompile Include="Cell.cpp" />
     <ClCompile Include="ControlPanel.cpp" />
-    <ClCompile Include="TableManager.cpp" />
+    <ClCompile Include="EmptyCell.cpp" />
+    <ClCompile Include="ErrorCell.cpp" />
+    <ClCompile Include="Table.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="NumCell.cpp" />
     <ClCompile Include="TextCell.cpp" />
@@ -159,7 +161,9 @@
   <ItemGroup>
     <ClInclude Include="Cell.h" />
     <ClInclude Include="ControlPanel.h" />
-    <ClInclude Include="TableManager.h" />
+    <ClInclude Include="EmptyCell.h" />
+    <ClInclude Include="ErrorCell.h" />
+    <ClInclude Include="Table.h" />
     <ClInclude Include="NumCell.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="TextCell.h" />

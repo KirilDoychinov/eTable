@@ -7,11 +7,11 @@
 class NumCell :
 	public Cell
 {
-	friend class TableManager;
+	friend class Table;
 
 public:
 	double evaluate() const;
-	void print() const;
+	std::string toString() const;
 	~NumCell();
 	
 private:
