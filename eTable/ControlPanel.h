@@ -34,7 +34,7 @@ private:
 	void print() const;
 	void open(const std::string&);
 	void readFile(const std::string&);
-	void populateTable(std::fstream&, char);
+	void populateTable(const std::string&, char);
 	void save();
 	void saveAs(const std::string&);
 	bool validateFile(const std::string&);

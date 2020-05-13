@@ -8,6 +8,7 @@
 #include <functional>
 #include <fstream>
 #include "ControlPanel.h"
+#include <sstream>
 
 int main()
 {
@@ -15,5 +16,6 @@ int main()
 	cp->start();
 
 }
+
 
 

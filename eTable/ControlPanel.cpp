@@ -40,7 +40,7 @@ void ControlPanel::help() const {
 }
 
 void ControlPanel::exit() {
-	std::cout << "Programme terminated succesfully" << std::endl;
+	std::cout << "Programme terminated succesfully!" << std::endl;
 	std::exit(0);
 }
 
@@ -50,7 +50,7 @@ void ControlPanel::close() {
 		table = nullptr;
 	}
 
-	std::cout << "Succesfully closed current file" << file << std::endl;
+	std::cout << "Succesfully closed current file!" << std::endl;
 	file = "";
 }
 
@@ -60,22 +60,23 @@ void ControlPanel::print() const {
 }
 
 void ControlPanel::open(const std::string& file) {
-	std::fstream myFile(file, std::ios::out);
+	std::fstream myFile(file, std::ios::app);
 
 	if (myFile.is_open()) {
-		std::cout << "Succesfully opened file " << file << std::endl;
+		std::cout << "Succesfully opened file " << file << "!" << std::endl;
 		myFile.close();
 		readFile(file);
 	}
 
 	else
 		std::cout << "Error opening the file!" << std::endl;
+
 }
 
 
 
 void ControlPanel::readFile(const std::string& file) {
-	std::fstream myFile(file, std::ios::in);
+	std::ifstream myFile(file, std::ios::in);
 
 	if (!myFile.is_open()) {
 		std::cout << "Error opening the file!" << std::endl;
@@ -83,25 +84,35 @@ void ControlPanel::readFile(const std::string& file) {
 	}
 
 	this->file = file;
-
 	char delimeter = ',';
 	int rows = 0, maxColumns = 0, countTokens = 0;
 	std::string line;
 
 	while (std::getline(myFile, line)) {
 		++rows;
-		int countTokens = std::count(line.begin(), line.end(), delimeter) + 1;
+		int countTokens = std::count(line.begin(), line.end(), delimeter);
 		if (countTokens > maxColumns)
 			maxColumns = countTokens;
 	}
 
-	table = new Table(rows, maxColumns);
-	populateTable(myFile, delimeter);
 	myFile.close();
+
+	if (rows == 0) {
+		table = new Table(10, 10);
+		std::cout << "File empty! Generated default 10x10 empty table" << std::endl;
+	}
+
+	else {
+		table = new Table(rows, maxColumns);
+		populateTable(file, delimeter);
+	}
 }
 
 
-void ControlPanel::populateTable(std::fstream& myFile, char delim) {
+
+
+void ControlPanel::populateTable(const std::string& file, char delim) {
+	std::ifstream myFile(file, std::ios::in);
 	std::string line;
 	int row = 0;
 	while (std::getline(myFile, line)) {
@@ -114,8 +125,10 @@ void ControlPanel::populateTable(std::fstream& myFile, char delim) {
 			while ((pos = line.find(delimeter)) != std::string::npos) {
 				++col;
 				token = line.substr(0, pos);
-				if (!token.empty())
+				if (!token.empty()) {
 					table->editCell(row, col, token);
+				}
+
 				line.erase(0, pos + delimeter.length());
 			}
 		}
@@ -123,15 +136,14 @@ void ControlPanel::populateTable(std::fstream& myFile, char delim) {
 }
 
 void ControlPanel::save() {
-	if (file.empty())
-		file = this->file;
+	assert(!file.empty());
 
 	std::fstream myFile(file, std::ios::out | std::ios::trunc);
 
 	if (myFile.is_open()) {
-		myFile << table;
+		myFile << *table;
 		myFile.close();
-		std::cout << "Table saved successfully!";
+		std::cout << "Table saved successfully!" << std::endl;
 	}
 
 	else
@@ -139,12 +151,12 @@ void ControlPanel::save() {
 }
 
 void ControlPanel::saveAs(const std::string& file) {
-	std::fstream myFile(file, std::ios::out | std::ios::trunc);
+	std::ofstream myFile(file, std::ios::out | std::ios::trunc);
 
 	if (myFile.is_open()) {
-		myFile << table;
+		myFile << *table;
 		myFile.close();
-		std::cout << "Table saved successfully as " << file << std::endl;
+		std::cout << "Table saved successfully as " << file << "!" << std::endl;
 	}
 
 	else
@@ -186,7 +198,7 @@ bool validateFileName(const std::string& name) {
 	std::size_t badChar = name.find_first_of(badChars);
 
 	if (badChar != std::string::npos) {
-		std::cout << "Invalid file name! (Hint: Check forbidden filename characters in Windows OS)";
+		std::cout << "Invalid file name! (Hint: Check forbidden filename characters in Windows OS)" << std::endl;
 		result = false;
 	}
 
@@ -208,13 +220,15 @@ void ControlPanel::edit(const std::string& commandArgs) {
 	}
 
 	if (secondDelim != -1) {
-		std::string stringRow = commandArgs.substr(0, firstDelim), col = commandArgs.substr(firstDelim + 1, secondDelim - firstDelim - 1);
-		std::string stringCol = commandArgs.substr(secondDelim + 1);
+		std::string stringRow = commandArgs.substr(0, firstDelim), stringCol = commandArgs.substr(firstDelim + 1, secondDelim - firstDelim - 1);
+		std::string  value = commandArgs.substr(secondDelim + 1);
 
-		if (StringUtils::isInteger(stringRow) && StringUtils::isInteger(col)) {
+		if (StringUtils::isInteger(stringRow) && StringUtils::isInteger(stringCol)) {
 			int row = std::stoi(stringRow), col = std::stoi(stringCol);
-			table->editCell(row, col, stringCol);
-			std::cout << "Cell edited succesfully" << std::endl;
+			if (table->editCell(row, col, value))
+				std::cout << "Cell edited succesfully!" << std::endl;
+			else
+				std::cout << "Invalid cell! Editing unsuccesful" << std::endl;
 			return;
 		}
 	}
@@ -252,7 +266,7 @@ void ControlPanel::executeCommand(std::string& command) {
 		}
 	}
 
-	else if (command.substr(0, 7) == "edit ") {
+	else if (command.substr(0, 5) == "edit ") {
 		std::string commandArguments = command.substr(5);
 		edit(commandArguments);
 	}

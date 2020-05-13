@@ -9,13 +9,17 @@
 #include <stack>
 #include <cmath>
 
-Table::Table(int rows, int columns) : rows(rows), columns(columns), table(rows, std::vector <Cell*>(columns, new EmptyCell())) {
+int getTableIndex(int, int);
+
+Table::Table(int rows, int columns) : rows(rows), columns(columns) {
+	table = new Cell * [rows * columns];
+	for (int i = 0; i < rows * columns; ++i)
+		table[i] = new EmptyCell();
 }
 
 Table::~Table() {
-	for (size_t i = 0; i < rows; ++i)
-		for (size_t j = 0; j < columns; ++j)
-			delete table[i][j];
+	for (int i = 0; i < rows * columns; ++i)
+		delete table[i];
 }
 
 Cell* Table::createCell(std::string& str) {
@@ -24,7 +28,7 @@ Cell* Table::createCell(std::string& str) {
 	if (str.empty())
 		return new EmptyCell();
 
-	else if (str.size() > 1 && str.front() == '"' && str.back() == '"')
+	else if (StringUtils::isText(str))
 		return new TextCell(str);
 
 	else if (StringUtils::isNumber(str))
@@ -50,7 +54,7 @@ double Table::evaluateReference(const std::string& ref) const {
 		int x = std::stoi(row), y = std::stoi(col);
 
 		if (cellExists(x, y))
-			return table.at(x - 1).at(y - 1)->evaluate();
+			return table[getTableIndex(x, y)]->evaluate();
 	}
 
 	return 0.;
@@ -122,34 +126,47 @@ bool Table::cellExists(int row, int col) const {
 	return row > 0 && col > 0 && row <= rows && col <= columns;
 }
 
-void Table::editCell(int row, int col, std::string& str) {
+bool Table::editCell(int row, int col, std::string& str) {
 	if (cellExists(row, col)) {
-		Cell* cell = table.at(row - 1).at(col - 1);
-		delete cell;
-		cell = createCell(str);
+		delete  table[(row - 1) * 10 + col - 1];
+		table[(row - 1) * 10 + col - 1] = nullptr;
+		table[(row - 1) * 10 + col - 1] = createCell(str);
+		return true;
 	}
 
-	else
-		std::cout << "Invalid cell! Editing unsuccesful" << std::endl;
+	return false;
 }
 
 void Table::print() const {
 
-	std::vector<size_t> maxSizeColumn(columns, 0);
+	int* maxSizedColumns = new int[columns];
+	for (int i = 0; i < columns; ++i)
+		maxSizedColumns[i] = 0;
 
 	for (size_t i = 0; i < rows; ++i) {
 		for (size_t j = 0; j < columns; ++j) {
-			size_t curentCellSize = table.at(i).at(j)->toString().size();
-			if (curentCellSize > maxSizeColumn.at(j))
-				maxSizeColumn.at(j) = curentCellSize;
+
+			std::string str = table[i * 10 + j]->toString();
+			size_t curentCellSize = (StringUtils::isText(str)) ? str.size() - 2 : str.size();
+
+			if (curentCellSize > maxSizedColumns[j]) {
+				maxSizedColumns[j] = curentCellSize;
+			}
 		}
 	}
 
-	for (size_t i = 0; i < rows; ++i)
+	for (size_t i = 0; i < rows; ++i) {
 		for (size_t j = 0; j < columns; ++j) {
-			std::string str = table.at(i).at(j)->toString();
-			std::cout << " " << str << std::setw((maxSizeColumn.at(j) - str.size())) << " | ";
+			std::string str = table[i * 10 + j]->toString();
+			if (StringUtils::isText(str))
+				str = str.substr(1, str.size() - 2);
+
+			int spaces = maxSizedColumns[j] - str.size();
+			std::cout << "| " << std::setw(spaces) << str << " ";
+			if (j == columns - 1)
+				std::cout << "|" << std::endl;
 		}
+	}
 }
 
 std::ostream& operator<<(std::ostream& os, const Table& t) {
@@ -157,11 +174,15 @@ std::ostream& operator<<(std::ostream& os, const Table& t) {
 
 	for (size_t i = 0; i < t.rows; ++i) {
 		for (size_t j = 0; j < t.columns; ++j)
-			os << t.table.at(i).at(j)->toString() << delimeter;
+			os << t.table[i * 10 + j]->toString() << delimeter;
 		os << '\n';
 	}
 
 	return os;
+}
+
+int getTableIndex(int x, int y) {
+	return (x - 1) * 10 + y - 1;
 }
 
 

@@ -3,8 +3,6 @@
 #include <string>
 #include <sstream>
 
-int digits(double);
-
 NumCell::NumCell(double d) : value(d) {
 }
 
@@ -16,25 +14,22 @@ double NumCell::evaluate() const {
 }
 
 std::string NumCell::toString() const {
-	std::stringstream ss;
-
 	if (std::fabs(value - std::round(value)) < 0.001)
-		ss << std::round(value);
-	else
-		ss << std::setprecision((double)digits(value) + 3) << value;
+		return std::to_string((int)std::round(value));
 
+	int x = std::round(1000 * value), precision = 1;
+
+	if (x % 100 != 0) {
+		++precision;
+		if (x % 10 != 0)
+			++precision;
+	}
+
+	std::stringstream ss;
+	ss << std::fixed << std::setprecision(precision) << value;
 	return ss.str();
 }
 
-int digits(double d) {
-	int x = std::floor(d), digits = 0;
 
-	while (x != 0) {
-		x /= 10;
-		++digits;
-	}
-
-	return digits;
-}
 
 

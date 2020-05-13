@@ -13,6 +13,7 @@ namespace StringUtils
 	bool isInteger(const std::string&);
 	bool isFormula(const std::string&);
 	bool isReference(const std::string&);
+	bool isText(const std::string&);
 };
 
 #endif

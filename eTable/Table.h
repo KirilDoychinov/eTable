@@ -12,18 +12,19 @@ public:
 	~Table();
 
 	Cell* createCell(std::string&);
-	void editCell(int, int, std::string&);
+	bool editCell(int, int, std::string&);
 	void print() const;
 	friend std::ostream& operator<<(std::ostream&, const Table&);
+	std::optional<double> calculateFormula(const std::string&) const;
 
 private:
 	int rows;
 	int columns;
-	std::vector<std::vector<Cell*>> table;
+	Cell** table;
 
 	bool cellExists(int, int) const;
 	double evaluateReference(const std::string&) const;
-	std::optional<double> calculateFormula(const std::string&) const;
+	
 };
 
 #endif

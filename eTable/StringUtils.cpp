@@ -105,3 +105,7 @@ bool StringUtils::isFormula(const std::string& str) {
 
 	return true;
 }
+
+bool StringUtils::isText(const std::string& str) {
+	return str.size() > 1 && str.front() == '"' && str.back() == '"';
+}
