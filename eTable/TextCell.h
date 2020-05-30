@@ -2,8 +2,16 @@
 #define TEXT_CELL_H
 
 #include "Cell.h"
+#include <string>
 
-//// private destructor only
+/**
+ * @class	TextCell
+ *
+ * @brief	Class representing a table cell assigned to a text.
+ * 			Has only private constrcutor and cannot be manually instantiated.
+ * 			Inherits abstract class cell and overrides all its virtual methods.
+ *
+ */
 class TextCell :
 	public Cell
 {
@@ -15,6 +23,11 @@ public:
 
 private:
 	TextCell(const std::string&);
+
+
+	/**  
+	* @brief Text value of the cell
+	*/
 	std::string str;
 };
 

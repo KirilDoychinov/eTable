@@ -1,19 +1,10 @@
+#include "TableManager.h"
 #include <iostream>
-#include <cmath>
-#include <iomanip>
-#include <string>
-#include <map>
-#include "Table.h"
-#include "TextCell.h"
-#include <functional>
-#include <fstream>
-#include "ControlPanel.h"
-#include <sstream>
 
 int main()
 {
-	ControlPanel* cp = new ControlPanel();
-	cp->start();
+	TableManager* cp = new TableManager();
+	cp->startConsole();
 
 }
 

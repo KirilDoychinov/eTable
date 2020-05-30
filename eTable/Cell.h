@@ -1,7 +1,16 @@
 #ifndef CELL_H
 #define CELL_H
 
-#include<iostream>
+#include <string>
+
+/**
+ * @class	Cell
+ *
+ * @brief	 Pure abstract class representing a table cell. Class cannot
+ * 			 be instantinated and possess only virtual methods that 
+ * 			 must be overriden in all derived classes
+ *
+ */
 
 class Cell
 {

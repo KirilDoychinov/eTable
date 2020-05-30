@@ -3,6 +3,13 @@
 
 #include <string>
 
+/**
+ * @namespace	StringUtils
+ *
+ * @brief		Contains some useful methods for string and char manipulation
+ * 				and data type asserting
+ */
+
 namespace StringUtils
 {
 	bool isDigit(char);
@@ -12,8 +19,8 @@ namespace StringUtils
 	bool isNumber(const std::string&);
 	bool isInteger(const std::string&);
 	bool isFormula(const std::string&);
-	bool isReference(const std::string&);
-	bool isText(const std::string&);
+	bool isCellReference(const std::string&);
+	bool isQuotedText(const std::string&);
 };
 
 #endif

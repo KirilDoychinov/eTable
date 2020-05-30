@@ -1,4 +1,4 @@
-#include "ControlPanel.h"
+#include "TableManager.h"
 #include "StringUtils.h"
 #include <iostream>
 #include <string>
@@ -10,15 +10,32 @@
 bool validateFileExtension(const std::string&);
 bool validateFileName(const std::string&);
 
-ControlPanel::ControlPanel() :table(nullptr), file("") {
+/**
+ * @brief	Default constructor creating with no table
+ * 			present and empty data file
+ *
+ */
+
+TableManager::TableManager() :table(nullptr), file("") {
 }
 
-ControlPanel::~ControlPanel() {
+/**
+ * @brief	Destructor destroying the object and taking care
+ * 			of allocated dynamic memory
+ *
+ */
+
+TableManager::~TableManager() {
 	if (table != nullptr)
 		delete table;
 }
 
-void ControlPanel::start() {
+/**
+ * @brief	Starts the command console to read user commands
+ *
+ */
+
+void TableManager::startConsole() {
 	std::cout << "Open a text file (.txt) to read: (open <file>.txt)" << std::endl;
 	std::string userInput;
 
@@ -28,7 +45,12 @@ void ControlPanel::start() {
 	};
 }
 
-void ControlPanel::help() const {
+/**
+ * @brief    Prints available user commands
+ *
+ */
+
+void TableManager::help() const {
 	std::cout << "open <file>                  opens <file>\n"
 		<< "close                        closes currently opened file\n"
 		<< "save                         saves the currently open file\n"
@@ -39,12 +61,22 @@ void ControlPanel::help() const {
 		<< "exit                         exists the program" << std::endl;
 }
 
-void ControlPanel::exit() {
+/**
+ * @brief    Exits the programme
+ *
+ */
+
+void TableManager::exit() {
 	std::cout << "Programme terminated succesfully!" << std::endl;
 	std::exit(0);
 }
 
-void ControlPanel::close() {
+/**
+ * @brief    Closes the current open file and clears any data read
+ *
+ */
+
+void TableManager::close() {
 	if (table != nullptr) {
 		delete table;
 		table = nullptr;
@@ -54,12 +86,24 @@ void ControlPanel::close() {
 	file = "";
 }
 
-void ControlPanel::print() const {
+/**
+ * @brief    Prints the table if present
+ *
+ */
+
+void TableManager::print() const {
 	if (table != nullptr)
 		table->print();
 }
 
-void ControlPanel::open(const std::string& file) {
+/**
+ * @brief	           Opens a file to read from
+ *
+ * @param [in]  file   File to read
+ *
+ */
+
+void TableManager::open(const std::string& file) {
 	std::fstream myFile(file, std::ios::app);
 
 	if (myFile.is_open()) {
@@ -73,9 +117,14 @@ void ControlPanel::open(const std::string& file) {
 
 }
 
+/**
+ * @brief	           Read data from a given file
+ *
+ * @param [in]  file   File to read
+ *
+ */
 
-
-void ControlPanel::readFile(const std::string& file) {
+void TableManager::readFile(const std::string& file) {
 	std::ifstream myFile(file, std::ios::in);
 
 	if (!myFile.is_open()) {
@@ -108,10 +157,16 @@ void ControlPanel::readFile(const std::string& file) {
 	}
 }
 
+/**
+ * @brief				   Read data and populate table from file. If given row has
+ * 						   more cells than another one, the second is autofilled with empty cells
+ *
+ * @param  [in]	  file 	   The file to read
+ * 				  
+ * @param  [in]	  delim	   The delimiter used in data file
+ */
 
-
-
-void ControlPanel::populateTable(const std::string& file, char delim) {
+void TableManager::populateTable(const std::string& file, char delim) {
 	std::ifstream myFile(file, std::ios::in);
 	std::string line;
 	int row = 0;
@@ -135,7 +190,13 @@ void ControlPanel::populateTable(const std::string& file, char delim) {
 	}
 }
 
-void ControlPanel::save() {
+/**
+ * @brief    Saves the current data in the current file
+ *
+ */
+
+
+void TableManager::save() {
 	assert(!file.empty());
 
 	std::fstream myFile(file, std::ios::out | std::ios::trunc);
@@ -150,7 +211,14 @@ void ControlPanel::save() {
 		std::cout << "Error opening the file!" << std::endl;
 }
 
-void ControlPanel::saveAs(const std::string& file) {
+/**
+ * @brief			   Writes current data to the file specified
+ *
+ * @param [in]  file   File to write data to
+ *
+ */
+
+void TableManager::saveAs(const std::string& file) {
 	std::ofstream myFile(file, std::ios::out | std::ios::trunc);
 
 	if (myFile.is_open()) {
@@ -163,7 +231,16 @@ void ControlPanel::saveAs(const std::string& file) {
 		std::cout << "Error opening the file!" << std::endl;
 }
 
-bool ControlPanel::validateFile(const std::string& file) {
+/**
+ * @brief			Validates if the given file is .txt format and
+ * 					its name is valid
+ *
+ * @param 	file	The file.
+ *
+ * @returns			True if file is valid, false if it fails.
+ */
+
+bool TableManager::validateFile(const std::string& file) {
 	if (file.size() < 5) {
 		std::cout << "Filename too short! (Hint: File format should be filename.txt)" << std::endl;
 		return false;
@@ -176,6 +253,15 @@ bool ControlPanel::validateFile(const std::string& file) {
 	return validateFileExtension(extension) && validateFileName(name);
 }
 
+/**
+ * @brief				Checks if file extension is '.txt'
+ *
+ * @param 	extension	File extension
+ *
+ * @returns				True if it is .txt, false otherwise
+ *
+ */
+
 bool validateFileExtension(const std::string& extension) {
 	bool result = true;
 
@@ -187,15 +273,23 @@ bool validateFileExtension(const std::string& extension) {
 	return result;
 }
 
+/**
+ * @brief			Validates the file name.Name should not contain  any
+ * 					forbidden OS characters specified by the Windows OS
+ *
+ * @param 	name	File name
+ *
+ * @returns			True if it is valid, false otherwise
+ * 					
+ */
 
-
-bool validateFileName(const std::string& name) {
-	assert(!name.empty() && "Name should not be empty string");
+bool validateFileName(const std::string& file) {
+	assert(!file.empty() && "Name should not be empty string");
 
 	bool result = true;
 
 	std::string badChars = "/\?%*:|\"<>.";
-	std::size_t badChar = name.find_first_of(badChars);
+	std::size_t badChar = file.find_first_of(badChars);
 
 	if (badChar != std::string::npos) {
 		std::cout << "Invalid file name! (Hint: Check forbidden filename characters in Windows OS)" << std::endl;
@@ -205,12 +299,19 @@ bool validateFileName(const std::string& name) {
 	return result;
 }
 
-void ControlPanel::edit(const std::string& commandArgs) {
+/**
+ * @brief	             Edit given cell with the value specified
+ *
+ * @param [in]  args	 User console input specifying the cell and the new value
+ *
+ */
+
+void TableManager::edit(const std::string& args) {
 	int firstDelim = -1, secondDelim = -1;
 	char delimeter = ' ';
 
-	for (size_t i = 0; i < commandArgs.size() - 1; ++i) {
-		if (commandArgs.at(i) == delimeter)
+	for (size_t i = 0; i < args.size() - 1; ++i) {
+		if (args.at(i) == delimeter)
 			if (firstDelim == -1)
 				firstDelim = i;
 			else {
@@ -220,8 +321,8 @@ void ControlPanel::edit(const std::string& commandArgs) {
 	}
 
 	if (secondDelim != -1) {
-		std::string stringRow = commandArgs.substr(0, firstDelim), stringCol = commandArgs.substr(firstDelim + 1, secondDelim - firstDelim - 1);
-		std::string  value = commandArgs.substr(secondDelim + 1);
+		std::string stringRow = args.substr(0, firstDelim), stringCol = args.substr(firstDelim + 1, secondDelim - firstDelim - 1);
+		std::string  value = args.substr(secondDelim + 1);
 
 		if (StringUtils::isInteger(stringRow) && StringUtils::isInteger(stringCol)) {
 			int row = std::stoi(stringRow), col = std::stoi(stringCol);
@@ -236,7 +337,15 @@ void ControlPanel::edit(const std::string& commandArgs) {
 	std::cout << "Invalid command! (Hint: Command should be: edit <row> <col> <value>)" << std::endl;
 }
 
-void ControlPanel::executeCommand(std::string& command) {
+/**
+ * @brief	              Executes a console-typed user command. If the given input
+ * 						  does not match any command, proper error message is printed
+ *
+ * @param [in]  command	  User console input
+ *
+ */
+
+void TableManager::executeCommand(std::string& command) {
 	StringUtils::trim(command);
 
 	if (command.size() < 4) {
