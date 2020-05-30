@@ -272,7 +272,7 @@ void Table::print() const {
  *
  * @param [in,out]   os	   The output stream
  *
- * @param [in] 	     date  Table to be streamed
+ * @param [in] 	     t     Table to be streamed
  *
  * @returns	               The streamed table object
  *
