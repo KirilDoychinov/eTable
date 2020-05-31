@@ -22,7 +22,7 @@ TextCell::~TextCell() {
 }
 
 /**
- * @brief	 Tries to extract a number from the text. If the text
+ * @brief	 Tries to extract a number from the quoted text. If the text
  * 			 cannot be translated to a numeric value, 0 is returned
  *
  * @returns	 Extracted numeric value of cell, or 0 if failed
@@ -31,9 +31,10 @@ TextCell::~TextCell() {
 
 double TextCell::evaluate() const {
 	double value = 0.;
+	std::string content = str.substr(1, str.size() - 2);
 
-	if (StringUtils::isNumber(str))
-		value = std::stod(str);
+	if (StringUtils::isNumber(content))
+		value = std::stod(content);
 
 	return value;
 }

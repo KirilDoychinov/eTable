@@ -10,7 +10,7 @@
 #include <cmath>
 #include <cassert>
 
-void printKSpaces(unsigned int k);
+void printKSpaces(int k);
 
 /**
  * @brief				  Constructs a table with empty cells from
@@ -64,7 +64,7 @@ Cell* Table::createCell(std::string& str, bool supressMessages) {
 		return new EmptyCell();
 
 	else if (StringUtils::isQuotedText(str))
-		return new TextCell(str.substr(1, str.size() - 2));
+		return new TextCell(str);
 
 	else if (StringUtils::isNumber(str))
 		return new NumCell(std::stod(str));
@@ -266,7 +266,13 @@ void Table::print() const {
 
 			std::cout << "| ";
 			printKSpaces(spaces);
-			std::cout << str << " ";
+
+			if (StringUtils::isQuotedText(str))
+				std::cout << str.substr(1, str.size() - 2);
+			else
+				std::cout << str;
+
+			std::cout << " ";
 
 			if (j == columns - 1)
 				std::cout << "|" << std::endl;
@@ -327,6 +333,9 @@ void Table::calculateColumnWidths(int* columnWidths) const {
 			std::string str = table[getIndexCell(i, j)]->toString();
 			size_t curentCellSize = str.size();
 
+			if (StringUtils::isQuotedText(str))
+				curentCellSize -= 2;
+
 			if (curentCellSize > columnWidths[j]) {
 				columnWidths[j] = curentCellSize;
 			}
@@ -335,12 +344,13 @@ void Table::calculateColumnWidths(int* columnWidths) const {
 }
 
 /**
- * @brief			Print k spaces
+ * @brief			Print k spaces, no result if k is
+ * 					non-positive
 
  * @param [in]	k	Number of spaces to print
  */
 
-void printKSpaces(unsigned int k) {
+void printKSpaces(int k) {
 	for (int i = 0; i < k; ++i)
 		std::cout << " ";
 }
