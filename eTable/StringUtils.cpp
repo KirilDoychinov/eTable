@@ -123,21 +123,23 @@ bool StringUtils::isCellReference(const std::string& str) {
  */
 
 bool StringUtils::isFormula(const std::string& str) {
-	if (str.size() < 2 || str.front() != '=' || isMathOperator(str.back()))
+
+	if (str.size() < 2 || str.front() != '=' || !isDigit(str.back()))
 		return false;
 
 	int pos = 1;
 
-	for (size_t i = 1; i < str.size(); ++i) {
+	for (int i = 1; i < str.size(); ++i) {
 
 		char ch = str.at(i);
 
 		if (isMathOperator(ch) || i == str.size() - 1) {
-			int k = ((i == str.size() - 1) ? 1 : 0);
-			std::string temp = str.substr(pos, i - pos + k);
+			int includeLastSymbol = (i == str.size() - 1) ? 1 : 0;
+			std::string temp = str.substr(pos, i - pos + includeLastSymbol);
 
-			if (isSign(temp.front()) || !(isNumber(temp) || isCellReference(temp)))
+			if (temp.empty() || isSign(temp.front()) || !(isNumber(temp) || isCellReference(temp)))
 				return false;
+
 			pos = i + 1;
 		}
 	}

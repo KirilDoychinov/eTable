@@ -6,7 +6,7 @@
 /**
  * @fn	Cell::~Cell()
  *
- * @brief	Destructor for abstract class (Definition is not neccesary for a pure 
+ * @brief	Destructor for abstract class (Definition is not neccesary for a pure
  * 			virtual function unless it is the destructor)
  *
  */

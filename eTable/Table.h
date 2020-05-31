@@ -19,8 +19,8 @@ public:
 	Table(int, int);
 	~Table();
 
-	Cell* createCell(std::string&);
-	bool editCell(int, int, std::string&);
+	Cell* createCell(std::string&, bool = false);
+	void editCell(int, int, std::string&, bool = false);
 	void print() const;
 	friend std::ostream& operator<<(std::ostream&, const Table&);
 	std::optional<double> calculateFormula(const std::string&) const;
@@ -45,8 +45,10 @@ private:
 	Cell** table;
 
 	bool cellExists(int, int) const;
+	int getIndexCell(int x, int y) const;
 	double evaluateReference(const std::string&) const;
-	
+	void calculateColumnWidths(int* columnWidths) const;
+
 };
 
 #endif

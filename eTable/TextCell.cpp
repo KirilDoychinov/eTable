@@ -3,10 +3,10 @@
 #include <string>
 
 /**
- * @brief			Constucts a text cell from given text that
- * 					should be enclosed by quotation mark '"'
+ * @brief			 Constucts a text cell from given text that
+ * 					 should be enclosed by quotation mark '"'
  *
- * @param [in]	d	Numeric value
+ * @param [in]	str	 Text
  *
  */
 
@@ -31,9 +31,8 @@ TextCell::~TextCell() {
 
 double TextCell::evaluate() const {
 	double value = 0.;
-	std::string noQuotes = str.substr(1, str.size() - 2);
 
-	if (StringUtils::isNumber(noQuotes))
+	if (StringUtils::isNumber(str))
 		value = std::stod(str);
 
 	return value;

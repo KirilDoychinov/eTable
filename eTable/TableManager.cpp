@@ -162,7 +162,7 @@ void TableManager::readFile(const std::string& file) {
  * 						   more cells than another one, the second is autofilled with empty cells
  *
  * @param  [in]	  file 	   The file to read
- * 				  
+ *
  * @param  [in]	  delim	   The delimiter used in data file
  */
 
@@ -181,7 +181,7 @@ void TableManager::populateTable(const std::string& file, char delim) {
 				++col;
 				token = line.substr(0, pos);
 				if (!token.empty()) {
-					table->editCell(row, col, token);
+					table->editCell(row, col, token, true);
 				}
 
 				line.erase(0, pos + delimeter.length());
@@ -280,16 +280,16 @@ bool validateFileExtension(const std::string& extension) {
  * @param 	name	File name
  *
  * @returns			True if it is valid, false otherwise
- * 					
+ *
  */
 
-bool validateFileName(const std::string& file) {
-	assert(!file.empty() && "Name should not be empty string");
+bool validateFileName(const std::string& name) {
+	assert(!name.empty() && "Name should not be empty string");
 
 	bool result = true;
 
 	std::string badChars = "/\?%*:|\"<>.";
-	std::size_t badChar = file.find_first_of(badChars);
+	std::size_t badChar = name.find_first_of(badChars);
 
 	if (badChar != std::string::npos) {
 		std::cout << "Invalid file name! (Hint: Check forbidden filename characters in Windows OS)" << std::endl;
@@ -326,10 +326,8 @@ void TableManager::edit(const std::string& args) {
 
 		if (StringUtils::isInteger(stringRow) && StringUtils::isInteger(stringCol)) {
 			int row = std::stoi(stringRow), col = std::stoi(stringCol);
-			if (table->editCell(row, col, value))
-				std::cout << "Cell edited succesfully!" << std::endl;
-			else
-				std::cout << "Invalid cell! Editing unsuccesful" << std::endl;
+
+			table->editCell(row, col, value);
 			return;
 		}
 	}

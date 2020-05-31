@@ -10,7 +10,7 @@
 #include <cmath>
 #include <cassert>
 
-int getTableIndex(int, int);
+void printKSpaces(unsigned int k);
 
 /**
  * @brief				  Constructs a table with empty cells from
@@ -23,6 +23,7 @@ int getTableIndex(int, int);
 
 Table::Table(int rows, int columns) : rows(rows), columns(columns) {
 	table = new Cell * [rows * columns];
+
 	for (int i = 0; i < rows * columns; ++i)
 		table[i] = new EmptyCell();
 }
@@ -38,27 +39,32 @@ Table::~Table() {
 }
 
 /**
- * @brief					Static factory method that creates a cell from given value.
- * 							If the cell is a number, a number cell is created
- * 							If the cell is a string, a text cell is created
- * 							If the cell is either a reference or a formula, it is
- * 							evaluated and the new value is assigned to the cell
- * 							If evaluation fails or the type is unknown, an error cell is produced
+ * @brief								Static factory method that creates a cell from given value.
+ * 										If the cell is a number, a number cell is created
+ * 										If the cell is a string, a text cell is created
+ * 										If the cell is either a reference or a formula, it is
+ * 										evaluated and the new value is assigned to the cell
+ * 										If evaluation fails or the type is unknown, an error cell is produced
  *
- * @param [in,out]	str		Desired cell value
+ * @param [in,out]	str					Desired cell value
  *
- * @returns					Cell from the evaluated type, or
- * 							ErrorCell if evaluation fails
+ * @param [in] 		supressMessages		If set to true (false by default), no messages will be printed out,
+ * 										apart from evalatuion errors (ex. dividing by zero)
+ *
+ * @returns								Cell from the evaluated type, or
+ * 										ErrorCell if evaluation fails
  */
 
-Cell* Table::createCell(std::string& str) {
+Cell* Table::createCell(std::string& str, bool supressMessages) {
 	StringUtils::trim(str);
+
+	std::string msg = "Error in cell! Cell has invalid type! Error cell is produced!";
 
 	if (str.empty())
 		return new EmptyCell();
 
 	else if (StringUtils::isQuotedText(str))
-		return new TextCell(str);
+		return new TextCell(str.substr(1, str.size() - 2));
 
 	else if (StringUtils::isNumber(str))
 		return new NumCell(std::stod(str));
@@ -67,8 +73,12 @@ Cell* Table::createCell(std::string& str) {
 		std::optional<double> result = calculateFormula(str);
 		if (result.has_value())
 			return new NumCell(result.value());
-		std::cout << "Dividing by zero!" << std::endl;;
+		else
+			msg = "Error in cell! Dividing by zero is not allowed! Error cell is produced!";
 	}
+
+	if (!supressMessages)
+		std::cout << msg << std::endl;
 
 	return new ErrorCell();
 }
@@ -83,30 +93,29 @@ Cell* Table::createCell(std::string& str) {
  */
 
 double Table::evaluateReference(const std::string& ref) const {
-	std::string column = "C";
-	size_t pos = ref.find_first_of(column);
+	size_t posColumn = ref.find_first_of("C");
 
-	if (pos != std::string::npos) {
-		std::string row = ref.substr(1, pos - 1);
-		std::string col = ref.substr(pos + 1);
+	if (posColumn != std::string::npos) {
+		std::string row = ref.substr(1, posColumn - 1);
+		std::string col = ref.substr(posColumn + 1);
 		int x = std::stoi(row), y = std::stoi(col);
 
 		if (cellExists(x, y))
-			return table[getTableIndex(x, y)]->evaluate();
+			return table[getIndexCell(x - 1, y - 1)]->evaluate();
 	}
 
 	return 0.;
 }
 
 /**
- * @brief		 Gives precedence value of a mathematical operator as follows:
- * 				 '^' is valued 4, '*' and '/' - 3 and '+' or '-' - 2
+ * @brief			  Gives precedence value of a mathematical operator as follows:
+ * 					  '^' is valued 4, '*' and '/' - 3 and '+' or '-' - 2
  *
- * @param [in]	 ch	Character that is mathematical operator
+ * @param [in]	 ch	  Character that is mathematical operator
  *
- * @returns		 Operator precedence value
+ * @returns			  Operator precedence value
  *
- * @throws       Assertion error if given character is not an operator
+ * @throws			  Assertion error if given character is not an operator
  */
 
 int precedence(const char& ch) {
@@ -139,7 +148,7 @@ bool doNextOperation(std::stack<double>& nums, std::stack<char>& ops) {
 }
 
 /**
- * @brief		 Evaluates a given infix-notated formula using Shunting-yard algorithm7
+ * @brief		 Evaluates a given infix-notated formula using Shunting-yard algorithm
  * 				 in linear O(n) time and space complexity. If evaluation fails, it returns
  * 				 an empty value
  *
@@ -206,26 +215,33 @@ bool Table::cellExists(int row, int col) const {
 }
 
 /**
- * @brief				Edit the value of given cell
+ * @brief							Edit the value of given cell
  *
- * @param [in]	row		The cell' row
+ * @param [in]	row					The cell' row
  *
- * @param [in] 	col		The cell' column
+ * @param [in] 	col					The cell' column
  *
- * @param [in] 	str		New cell value
+ * @param [in] 	str					New cell value
  *
- * @returns				True on success, false otherwise
+ * @param [in] 	supressMessages		If set to true (false by default), no messages will be printed out,
+ * 									apart from evalatuion errors (ex. dividing by zero)
+ *
  */
 
-bool Table::editCell(int row, int col, std::string& str) {
+void Table::editCell(int row, int col, std::string& str, bool supressMessages) {
+	std::string msg = "Invalid cell! Editing unsuccesful";
+
 	if (cellExists(row, col)) {
-		delete  table[(row - 1) * 10 + col - 1];
-		table[(row - 1) * 10 + col - 1] = nullptr;
-		table[(row - 1) * 10 + col - 1] = createCell(str);
-		return true;
+		int indexCell = getIndexCell(row - 1, col - 1);
+		delete  table[indexCell];
+		table[indexCell] = nullptr;
+		table[indexCell] = createCell(str, supressMessages);
+
+		msg = "Cell edited succesfully!";
 	}
 
-	return false;
+	if (!supressMessages)
+		std::cout << msg << std::endl;
 }
 
 /**
@@ -236,31 +252,22 @@ bool Table::editCell(int row, int col, std::string& str) {
  */
 
 void Table::print() const {
-
-	int* maxSizedColumns = new int[columns];
+	int* columnWidths = new int[columns];
 	for (int i = 0; i < columns; ++i)
-		maxSizedColumns[i] = 0;
+		columnWidths[i] = 0;
+
+	calculateColumnWidths(columnWidths);
 
 	for (size_t i = 0; i < rows; ++i) {
 		for (size_t j = 0; j < columns; ++j) {
+			std::string str = table[getIndexCell(i, j)]->toString();
 
-			std::string str = table[i * 10 + j]->toString();
-			size_t curentCellSize = (StringUtils::isQuotedText(str)) ? str.size() - 2 : str.size();
+			int spaces = columnWidths[j] - str.size();
 
-			if (curentCellSize > maxSizedColumns[j]) {
-				maxSizedColumns[j] = curentCellSize;
-			}
-		}
-	}
+			std::cout << "| ";
+			printKSpaces(spaces);
+			std::cout << str << " ";
 
-	for (size_t i = 0; i < rows; ++i) {
-		for (size_t j = 0; j < columns; ++j) {
-			std::string str = table[i * 10 + j]->toString();
-			if (StringUtils::isQuotedText(str))
-				str = str.substr(1, str.size() - 2);
-
-			int spaces = maxSizedColumns[j] - str.size();
-			std::cout << "| " << std::setw(spaces) << str << " ";
 			if (j == columns - 1)
 				std::cout << "|" << std::endl;
 		}
@@ -283,7 +290,7 @@ std::ostream& operator<<(std::ostream& os, const Table& t) {
 
 	for (size_t i = 0; i < t.rows; ++i) {
 		for (size_t j = 0; j < t.columns; ++j)
-			os << t.table[i * 10 + j]->toString() << delimeter;
+			os << t.table[t.columns * i + j]->toString() << delimeter;
 		os << '\n';
 	}
 
@@ -291,17 +298,51 @@ std::ostream& operator<<(std::ostream& os, const Table& t) {
 }
 
 /**
- * @brief		Gets table acumulated index of cell from
+ * @brief		Gets cell absolute index from
  * 				given row and column
  *
  * @param 	x	cell row
+ *
  * @param 	y	cell column
  *
  * @returns		Absolute index of cell
  */
 
-int getTableIndex(int x, int y) {
-	return (x - 1) * 10 + y - 1;
+int Table::getIndexCell(int x, int y) const {
+	return x * columns + y;
+}
+
+/**
+ * @brief							Calculates the table column widths according to
+ * 									the longest string value encounntered
+ *
+ * @param [in,out]	columnWidths	Array of table column widths
+ *
+ */
+
+void Table::calculateColumnWidths(int* columnWidths) const {
+	for (size_t i = 0; i < rows; ++i) {
+		for (size_t j = 0; j < columns; ++j) {
+
+			std::string str = table[getIndexCell(i, j)]->toString();
+			size_t curentCellSize = str.size();
+
+			if (curentCellSize > columnWidths[j]) {
+				columnWidths[j] = curentCellSize;
+			}
+		}
+	}
+}
+
+/**
+ * @brief			Print k spaces
+
+ * @param [in]	k	Number of spaces to print
+ */
+
+void printKSpaces(unsigned int k) {
+	for (int i = 0; i < k; ++i)
+		std::cout << " ";
 }
 
 
